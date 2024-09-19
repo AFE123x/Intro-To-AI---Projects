@@ -97,52 +97,35 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     #game.getDirection()
     #game.generateSuccessor()
 
-    #util.push
-    #util.pop
-    #util.isEmpty
-    # Config.generateSuccessor()
-    # 
-    # closed = set()
-    # fringe = util.Stack()
-    # fringe.push(node(problem.getStartState(), None, None))
-    # while fringe.isEmpty() is not True:
-    #     node = fringe.pop()
-    #     if problem.isGoalState(node.state) is True:
-    #         actions = list()
-    #         while node.action is not None:
-    #             actions.append(node.action)
-    #             node = node.pred
-    #         actions.reverse()
-    #         return actions
-    #     if node.state not in closed:
-    #         closed.add(node.state)
-    #         for s in problem.getSuccessors(node.state):
-    #             fringe.push(node(s[0], node, s[1]))
-    # return list()
     stack = util.Stack()
-    visited = set()
-    
-    #successor, direction, cost
-    tup = ()
-    stack.push(problem.getStartState())
+    visited = list()
+    print(f'Start state:{problem.getStartState()}')
+    # successor, direction, cost
+    stack.push((problem.getStartState(), None, None))
     while stack.isEmpty() is not True:
-
+        # x = input("press enter")
         # get the edges and put in list
         stackpop = stack.pop()
-        successors = problem.getSuccessors(stackpop)
+        visited.append(stackpop[0])
+        print(f"{stackpop}")
+        if problem.isGoalState(stackpop[0]):
+            break
+        successors = problem.getSuccessors(stackpop[0])
+        print(f'successors: {successors}')
         
         # add the edges to stack
         for successor in successors:
             # makes sure we haven't been to this location before
-            if successor not in visited:
+            if successor[0] not in visited:
                 stack.push(successor)
+                print(f'pushed {successor}')
+
+
+    print(f'Visited: {visited}')
         
-        # pop the last location on the stack
-        stackpop = stack.pop()
         
-        
-        move = Directions.STOP
-        move = Directions.WEST()
+      #  move = Directions.STOP
+      #  move = Directions.WEST()
         
         
 
@@ -150,8 +133,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
         #
         
 
-    print(problem.getStartState())
-
+    
     # get current position
 
     # check positions around pacman
