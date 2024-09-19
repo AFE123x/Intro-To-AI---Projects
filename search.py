@@ -17,8 +17,10 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
+
 import util
 from game import Directions
+from game import Configuration as Config
 from typing import List
 
 class SearchProblem:
@@ -90,7 +92,75 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    #Directions.getPosition()
+    #game.getDirection()
+    #game.generateSuccessor()
+
+    #util.push
+    #util.pop
+    #util.isEmpty
+    # Config.generateSuccessor()
+    # 
+    # closed = set()
+    # fringe = util.Stack()
+    # fringe.push(node(problem.getStartState(), None, None))
+    # while fringe.isEmpty() is not True:
+    #     node = fringe.pop()
+    #     if problem.isGoalState(node.state) is True:
+    #         actions = list()
+    #         while node.action is not None:
+    #             actions.append(node.action)
+    #             node = node.pred
+    #         actions.reverse()
+    #         return actions
+    #     if node.state not in closed:
+    #         closed.add(node.state)
+    #         for s in problem.getSuccessors(node.state):
+    #             fringe.push(node(s[0], node, s[1]))
+    # return list()
+    stack = util.Stack()
+    visited = set()
+    
+    #successor, direction, cost
+    tup = ()
+    stack.push(problem.getStartState())
+    while stack.isEmpty() is not True:
+
+        # get the edges and put in list
+        stackpop = stack.pop()
+        successors = problem.getSuccessors(stackpop)
+        
+        # add the edges to stack
+        for successor in successors:
+            # makes sure we haven't been to this location before
+            if successor not in visited:
+                stack.push(successor)
+        
+        # pop the last location on the stack
+        stackpop = stack.pop()
+        
+        
+        move = Directions.STOP
+        move = Directions.WEST()
+        
+        
+
+
+        #
+        
+
+    print(problem.getStartState())
+
+    # get current position
+
+    # check positions around pacman
+
+    # add each position to the stack, make sure the position is a valid position to move to
+
+    
+
+
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
