@@ -89,8 +89,50 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Initialize the stack and visited lists
+    mystack = util.Stack()
+    visitedtuple = []
+    visitedcoord = []
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    # Push the start state onto the stack
+    mystack.push((problem.getStartState(), None, '', 0))
+    current = None
+
+    while not mystack.isEmpty():
+        # input("hello")
+        current = mystack.pop()
+        visitedcoord.append(current[0])
+        visitedtuple.append(current)
+        # Check if the current state is the goal state
+        if problem.isGoalState(current[0]):
+            break
+        
+        # Mark the current state as visited
+
+        
+        # Explore successors
+        for successor in problem.getSuccessors(current[0]):
+            if successor[0] not in visitedcoord:
+                mystack.push((successor[0], current[0], successor[1], current[3] + 1))
+    finallist = []
+    while current[0] != problem.getStartState():
+        print(current[0])
+        for link in visitedtuple:
+            if current[0] == link[0]:
+                if link[2] == "South":
+                    finallist.insert(0,Directions.SOUTH)
+                elif link[2] == "North":
+                    finallist.insert(0,Directions.NORTH)
+                elif link[2] == "East":
+                    finallist.insert(0,Directions.EAST)
+                else:
+                    finallist.insert(0,Directions.WEST)
+                current = (link[1],None,None,0)
+    return finallist
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
