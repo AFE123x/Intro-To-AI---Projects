@@ -76,6 +76,7 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
+
     """
     Search the deepest nodes in the search tree first.
 
@@ -89,55 +90,183 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    # Initialize the stack and visited lists
+    # Start's successors: [('B', '0:A->B', 1.0), ('G', '1:A->G', 2.0), ('D', '2:A->D', 4.0)]
+    # mystack = util.Stack()
+    # visitedtuple = []
+    # visitedcoord = []
+
+    # # Push the start state onto the stack
+    # mystack.push((problem.getStartState(), None, '', 0))
+    # current = None
+
+    # while not mystack.isEmpty():
+    #     current = mystack.pop()
+    #     visitedcoord.append(current[0])
+    #     visitedtuple.append(current)
+    #     if problem.isGoalState(current[0]):
+    #         break
+    #     # Explore successors
+    #     greaze = problem.getSuccessors(current[0])
+    #     for successor in greaze:
+    #         if successor[0] not in visitedcoord:
+    #             mystack.push((successor[0], current[0], successor[1], current[3] + 1))
+
+    # finallist = []
+    # localitybaby = problem.getStartState()
+    # while current[0] != localitybaby:
+    #     # doing linear search
+    #     for link in visitedtuple:
+    #         if current[0] == link[0]:
+    #             if link[2] == "South":
+    #                 finallist.insert(0,Directions.SOUTH)
+    #             elif link[2] == "North":
+    #                 finallist.insert(0,Directions.NORTH)
+    #             elif link[2] == "East":
+    #                 finallist.insert(0,Directions.EAST)
+    #             else:
+    #                 finallist.insert(0,Directions.WEST)
+    #             current = (link[1],None,None,0)
+    #             break
+    # return finallist
+
+    # make stack
+    
+    # (successor tuple,parent node) 
     mystack = util.Stack()
-    visitedtuple = []
-    visitedcoord = []
+    
+    #(current node)
+    #(current node, parent node)
+    visitedNodes = []
+    # coord of current node
+    visitedCoords = []
 
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
 
-    # Push the start state onto the stack
-    mystack.push((problem.getStartState(), None, '', 0))
-    current = None
+    mystack.push(((problem.getStartState(),'',0), None))
+    current_node = None
+    current_temp = None
+    # searching the map to find different solutions
+    while mystack.isEmpty() != True:
+        # get the current node we are going to expand
 
-    while not mystack.isEmpty():
-        # input("hello")
-        current = mystack.pop()
-        visitedcoord.append(current[0])
-        visitedtuple.append(current)
-        # Check if the current state is the goal state
-        if problem.isGoalState(current[0]):
+        
+        stack_node = mystack.pop()
+        # print(f"stack node:{stack_node}")
+        current_temp = stack_node
+        
+        # (coord, direction, weight)
+        current_node = stack_node[0]
+        # print(f"current node:{current_node}")
+
+
+        # (coord, direction, weight)
+        parent_node = stack_node[1]
+        # print(f"parent node:{parent_node}")
+
+        
+        # add current node to visisted nodes
+        visitedNodes.append((stack_node))
+        visitedCoords.append((current_node[0]))
+        
+        #check if goal state has been reached
+        if problem.isGoalState(current_node[0]):
             break
-        
-        # Mark the current state as visited
+        successors = problem.getSuccessors(current_node[0])
+        # suc: (coord, direction, weight)
 
-        
-        # Explore successors
-        for successor in problem.getSuccessors(current[0]):
-            if successor[0] not in visitedcoord:
-                mystack.push((successor[0], current[0], successor[1], current[3] + 1))
+        for suc in successors:
+            if suc[0] not in visitedCoords:
+                mystack.push((suc, current_node))
+    
+    # find solution
     finallist = []
-    while current[0] != problem.getStartState():
-        print(current[0])
-        for link in visitedtuple:
-            if current[0] == link[0]:
-                if link[2] == "South":
-                    finallist.insert(0,Directions.SOUTH)
-                elif link[2] == "North":
-                    finallist.insert(0,Directions.NORTH)
-                elif link[2] == "East":
-                    finallist.insert(0,Directions.EAST)
-                else:
-                    finallist.insert(0,Directions.WEST)
-                current = (link[1],None,None,0)
+    startState = problem.getStartState()
+            
+    # current node : (coord, direction, weight)
+    # (((1, 1), 'West', 1), ((2, 1), 'West', 1))
+    while current_temp[0][0] != startState:
+        # print(current_temp)
+
+        finallist.insert(0,current_temp[0][1])
+        
+        for visitedNode in visitedNodes:
+            # if the parent's coords == current coord
+            # print(f'{current_temp} == {visitedNode}')
+            if current_temp[1][0] == visitedNode[0][0]:
+                current_temp = visitedNode
+                break
+            
     return finallist
 
+
+    
+    
+    
+
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    mystack = util.Queue()
+    
+    #(current node)
+    #(current node, parent node)
+    visitedNodes = []
+    # coord of current node
+    visitedCoords = []
+
+
+    mystack.push(((problem.getStartState(),'',0), None))
+    current_node = None
+    current_temp = None
+    # searching the map to find different solutions
+    while mystack.isEmpty() != True:
+        # get the current node we are going to expand
+
+        
+        stack_node = mystack.pop()
+        # print(f"stack node:{stack_node}")
+        current_temp = stack_node
+        
+        # (coord, direction, weight)
+        current_node = stack_node[0]
+        # print(f"current node:{current_node}")
+
+
+        # (coord, direction, weight)
+        parent_node = stack_node[1]
+        # print(f"parent node:{parent_node}")
+
+        
+        # add current node to visisted nodes
+        visitedNodes.append((stack_node))
+        visitedCoords.append((current_node[0]))
+        
+        #check if goal state has been reached
+        if problem.isGoalState(current_node[0]):
+            break
+        successors = problem.getSuccessors(current_node[0])
+        # suc: (coord, direction, weight)
+        print("successors!!!")
+        input()
+        for suc in successors:
+            if suc[0] not in visitedCoords:
+                print(suc)
+                mystack.push((suc, current_node))
+    
+    # find solution
+    finallist = []
+    startState = problem.getStartState()
+            
+    # current node : (coord, direction, weight)
+    # (((1, 1), 'West', 1), ((2, 1), 'West', 1))
+    while current_temp[0][0] != startState:
+
+        finallist.insert(0,current_temp[0][1])
+        
+        for visitedNode in visitedNodes:
+            if current_temp[1][0] == visitedNode[0][0]:
+                current_temp = visitedNode
+                break
+            
+    return finallist
+
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
