@@ -162,13 +162,7 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-        # (successor tuple,parent node) 
     myqueue = util.Queue()
-    
-    #(current node)
-    #(current node, parent node)
-    # visitedNodes = []
-    # coord of current node
     visitedCoords = []
 
     myqueue.push(((problem.getStartState(),'',0), []))
@@ -206,7 +200,23 @@ def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # my queue
+    myPriorityQueue = util.PriorityQueue()
+
+    # coords
+    visitedCoords = []
+
+    # ((coords, path, current node cost), current path node)
+    myPriorityQueue.push((problem.getStartState, [], 0))
+    
+    # While loop
+    while not myPriorityQueue.isEmpty():
+        franny = myPriorityQueue.pop()
+        if problem.isGoalState(franny[0][0]):
+            break
+    
+
+    
 
 def nullHeuristic(state, problem=None) -> float:
     """
