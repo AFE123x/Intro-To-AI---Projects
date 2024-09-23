@@ -191,7 +191,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
         # input()
         # if at the goal state, return current path
         if problem.isGoalState(current_coord):
-            print(current_path)
+            #print(current_path)
             return current_path
         
         # if we didnt visit the node OR the current path cost to that node is less than the previous cost to that node
@@ -202,7 +202,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
             # iterate through all the successors of the current node
             for suc_coord, suc_direction, suc_step_cost in problem.getSuccessors(current_coord):
                 # debug
-                print(f"suc:({suc_coord},{suc_direction},{suc_step_cost})")
+                # print(f"suc:({suc_coord},{suc_direction},{suc_step_cost})")
  
                 # calculate the new path cost
                 # find g(n)
