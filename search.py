@@ -157,9 +157,6 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
     return finallist
 
 
-    
-    
-    
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     myqueue = util.Queue()
@@ -251,13 +248,74 @@ def nullHeuristic(state, problem=None) -> float:
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+
     return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directions]:
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
 
+    # my queue
+    myPriorityQueue = util.PriorityQueue()
+
+    # coord: weight of path to coord
+    visitedCoords = {}
+
+    start=problem.getStartState()
+    # ((coords, path, current node cost), current heuristic value)
+    myPriorityQueue.push((start, [], 0),heuristic(start,problem))
+    
+    # While loop
+    while not myPriorityQueue.isEmpty():
+
+        # pop the node with the lowest cost, priority queue automatically pops the lowest cost
+        current_coord, current_path, current_path_cost = myPriorityQueue.pop()
+
+        # debug
+        # print(f"cur coord:{current_coord}")
+        # print(f"cur path:{current_path}")
+        # print(f"cur path:{current_path_cost}")
+        # input()
+        # if at the goal state, return current path
+        if problem.isGoalState(current_coord):
+            print(current_path)
+            return current_path
+        
+        # if we didnt visit the node OR the current path cost to that node is less than the previous cost to that node
+        if current_coord not in visitedCoords or current_path_cost < visitedCoords[current_coord]:
+            # add to visitedCoords list
+            visitedCoords[current_coord] = current_path_cost
+
+            # iterate through all the successors of the current node
+            for suc_coord, suc_direction, suc_step_cost in problem.getSuccessors(current_coord):
+                # debug
+                print(f"suc:({suc_coord},{suc_direction},{suc_step_cost})")
+ 
+                # calculate the new path cost
+                # find g(n)
+                new_path_cost = current_path_cost + suc_step_cost
+                # check if the successor we are looking at has been visited already 
+                # OR if it has, see if the new path cost cost is less than the previous path cost
+                if suc_coord not in visitedCoords or new_path_cost < visitedCoords[suc_coord]:
+                    
+                    # calculate new manhattan distance cost
+                    # find h(n)
+                    greedy_cost = heuristic(suc_coord, problem)
+
+                    # find the new A* cost
+                    # find f(n) 
+                    new_cost = new_path_cost + greedy_cost
+
+                    # add the direction to the new solution path
+                    new_path = current_path + [suc_direction]
+
+                    # push the successor with the updated path and new cost
+                    myPriorityQueue.push((suc_coord,new_path, new_path_cost), new_cost)
+    
+    # incase goal wasn't reached
+    return []
+    
+
+    
 # Abbreviations
 bfs = breadthFirstSearch
 dfs = depthFirstSearch
