@@ -290,20 +290,22 @@ class CornersProblem(search.SearchProblem):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
 
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
-        space)
+        space) (starting position,(tuple of true or false of corners have been visited))
+        
+        (bottom left, top left, bottom right, top right)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition,(False, False, False, False))
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        visited_corners = state[1]
+        return visited_corners[0] and visited_corners[1] and visited_corners[2] and visited_corners[3]
 
     def getSuccessors(self, state: Any):
         """
@@ -326,6 +328,41 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+
+            # get the current position, and the tuple of the corners
+            current_position, visited_corners = state
+
+            # get the current xy values
+            x,y = current_position
+            
+            dx, dy = Actions.directionToVector(action)
+
+            # find the next position
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            # check if next direction is a wall
+            print(f"wall[{nextx}][{nexty}]:{self.walls[nextx][nexty]}")
+
+            # check if that next position is hitting a wall
+            if not self.walls[nextx][nexty]:
+                # if its not hitting a wall, set it as the next position
+                next_position = (nextx, nexty)
+
+
+                # i think I need to turn the tuple into a list, bc i cant modify the tuple directly, 
+                # I could however change what is in the game state to be a list, unsure of what to do
+                new_visited_corners = list(visited_corners)
+
+                # if it is a corner, set that corner to true?? but how
+                if next_position in self.corners:
+                    # print all the corners
+                    print(self.corners)             
+                    corner_index = self.corners.index(next_position)
+                    new_visited_corners[corner_index] = True
+
+                # append successor to the successors return list
+                successors.append(((next_position, tuple(new_visited_corners)), action, 1))
+
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
