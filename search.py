@@ -206,14 +206,42 @@ def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     # coords
     visitedCoords = []
 
-    # ((coords, path, current node cost), current path node)
-    myPriorityQueue.push((problem.getStartState, [], 0))
+    # ((coords, path, current node cost), total path cost)
+    myPriorityQueue.push((problem.getStartState(), [], 0),0)
     
     # While loop
     while not myPriorityQueue.isEmpty():
-        franny = myPriorityQueue.pop()
-        if problem.isGoalState(franny[0][0]):
-            break
+
+        # pop the node with the lowest cost, priority queue automatically pops the lowest cost
+        current_coord, current_path, current_path_cost = myPriorityQueue.pop()
+
+        # debug
+        # print(f"cur coord:{current_coord}")
+        # print(f"cur path:{current_path}")
+        # print(f"cur path:{current_path_cost}")
+        # input()
+        # if at the goal state, return current path
+        if problem.isGoalState(current_coord):
+            print(current_path)
+            return current_path
+        
+        # if we didnt visit the node, visit it
+        if current_coord not in visitedCoords:
+            # add to visitedCoords list
+            visitedCoords.append(current_coord)
+
+            # iterate through all the successors of the current node
+            for suc_coord, suc_direction, suc_step_cost in problem.getSuccessors(current_coord):
+                # check if the successor we are looking at has been visited already 
+                if suc_coord not in visitedCoords:
+                    # calculate the new path cost
+                    new_cost = current_path_cost + suc_step_cost
+                    # add the successor with the updated path and new cost
+                    new_path = current_path + [suc_direction]
+                    myPriorityQueue.push((suc_coord,new_path, new_cost), new_cost)
+    
+    # incase goal wasn't reached
+    return []
     
 
     
