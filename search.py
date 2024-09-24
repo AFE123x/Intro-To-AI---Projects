@@ -119,33 +119,9 @@ def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
             if successor[0] not in visited:
                 stack.push(successor)
                 print(f'pushed {successor}')
-
-
-<<<<<<< Updated upstream
-    print(f'Visited: {visited}')
-        
-        
-      #  move = Directions.STOP
-      #  move = Directions.WEST()
-        
-        
-
-
-        #
-        
-
-    
-    # get current position
-
-    # check positions around pacman
-
-    # add each position to the stack, make sure the position is a valid position to move to
-
     
 
 
-=======
->>>>>>> Stashed changes
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
     """Search the shallowest nodes in the search tree first."""
