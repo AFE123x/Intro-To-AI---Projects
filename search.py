@@ -78,60 +78,166 @@ def tinyMazeSearch(problem: SearchProblem) -> List[Directions]:
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem: SearchProblem) -> List[Directions]:
+
     """
     Search the deepest nodes in the search tree first.
-
     Your search algorithm needs to return a list of actions that reaches the
     goal. Make sure to implement a graph search algorithm.
-
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
+    # (successor tuple,parent node) 
+    mystack = util.Stack()
 
-    #Directions.getPosition()
-    #game.getDirection()
-    #game.generateSuccessor()
+    #(current node)
+    #(current node, parent node)
+    visitedNodes = []
+    # coord of current node
+    visitedCoords = []
 
-    stack = util.Stack()
-    visited = list()
-    print(f'Start state:{problem.getStartState()}')
-    # successor, direction, cost
-    stack.push((problem.getStartState(), None, None))
-    while stack.isEmpty() is not True:
-        # x = input("press enter")
-        # get the edges and put in list
-        stackpop = stack.pop()
-        visited.append(stackpop[0])
-        print(f"{stackpop}")
-        if problem.isGoalState(stackpop[0]):
+
+    mystack.push(((problem.getStartState(),'',0), None))
+    current_node = None
+    current_temp = None
+    # searching the map to find different solutions
+    while mystack.isEmpty() != True:
+        # get the current node we are going to expand
+
+
+        stack_node = mystack.pop()
+        # print(f"stack node:{stack_node}")
+        current_temp = stack_node
+
+        # (coord, direction, weight)
+        current_node = stack_node[0]
+        # print(f"current node:{current_node}")
+
+
+        # (coord, direction, weight)
+        parent_node = stack_node[1]
+        # print(f"parent node:{parent_node}")
+
+
+        # add current node to visisted nodes
+        visitedNodes.append((stack_node))
+        visitedCoords.append((current_node[0]))
+
+        #check if goal state has been reached
+        if problem.isGoalState(current_node[0]):
             break
-        successors = problem.getSuccessors(stackpop[0])
-        print(f'successors: {successors}')
-        
-        # add the edges to stack
-        for successor in successors:
-            # makes sure we haven't been to this location before
-            if successor[0] not in visited:
-                stack.push(successor)
-                print(f'pushed {successor}')
-    
+        successors = problem.getSuccessors(current_node[0])
+        # suc: (coord, direction, weight)
+
+        for suc in successors:
+            if suc[0] not in visitedCoords:
+                mystack.push((suc, current_node))
+
+    # find solution
+    finallist = []
+    startState = problem.getStartState()
+
+    # current node : (coord, direction, weight)
+    # (((1, 1), 'West', 1), ((2, 1), 'West', 1))
+    while current_temp[0][0] != startState:
+        # print(current_temp)
+
+        finallist.insert(0,current_temp[0][1])
+
+        for visitedNode in visitedNodes:
+            # if the parent's coords == current coord
+            # print(f'{current_temp} == {visitedNode}')
+            if current_temp[1][0] == visitedNode[0][0]:
+                current_temp = visitedNode
+                break
+
+    return finallist
 
 
 
 def breadthFirstSearch(problem: SearchProblem) -> List[Directions]:
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    myqueue = util.Queue()
+    visitedCoords = []
+
+    myqueue.push(((problem.getStartState(),'',0), []))
+
+    # searching the map to find different solutions
+    while myqueue.isEmpty() != True:
+        # get the current node we are going to expand
+
+        current_node, current_path = myqueue.pop()
+
+        # check if at goal
+        if problem.isGoalState(current_node[0]):
+            return current_path
+        # print(f"stack node:{stack_node}")
+
+        # if not at goal node, add current node to visited nodes
+        if current_node[0] not in visitedCoords:
+            visitedCoords.append(current_node[0])
+
+            # (coords, direction, cost)
+            for suc in problem.getSuccessors(current_node[0]):
+                # if not in visisted, add to queue
+                if suc[0] not in visitedCoords:
+                    # add the successors direction to the back of current path LIST
+                    temp_path = current_path + [suc[1]]
+                    #print(f"current path: {temp_path}")
+                    # Add to queue
+                    myqueue.push((suc,temp_path))
+
+    # IF NEVER FOUND
+    return []
+
+
 
 def uniformCostSearch(problem: SearchProblem) -> List[Directions]:
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # my queue
+    myPriorityQueue = util.PriorityQueue()
+
+    # coords
+    visitedCoords = []
+
+    # ((coords, path, current node cost), total path cost)
+    myPriorityQueue.push((problem.getStartState(), [], 0),0)
+
+    # While loop
+    while not myPriorityQueue.isEmpty():
+
+        # pop the node with the lowest cost, priority queue automatically pops the lowest cost
+        current_coord, current_path, current_path_cost = myPriorityQueue.pop()
+
+        # debug
+        # print(f"cur coord:{current_coord}")
+        # print(f"cur path:{current_path}")
+        # print(f"cur path:{current_path_cost}")
+        # input()
+        # if at the goal state, return current path
+        if problem.isGoalState(current_coord):
+            print(current_path)
+            return current_path
+
+        # if we didnt visit the node, visit it
+        if current_coord not in visitedCoords:
+            # add to visitedCoords list
+            visitedCoords.append(current_coord)
+
+            # iterate through all the successors of the current node
+            for suc_coord, suc_direction, suc_step_cost in problem.getSuccessors(current_coord):
+                # check if the successor we are looking at has been visited already 
+                if suc_coord not in visitedCoords:
+                    # calculate the new path cost
+                    new_cost = current_path_cost + suc_step_cost
+                    # add the successor with the updated path and new cost
+                    new_path = current_path + [suc_direction]
+                    myPriorityQueue.push((suc_coord,new_path, new_cost), new_cost)
+
+    # incase goal wasn't reached
+    return []
 
 def nullHeuristic(state, problem=None) -> float:
     """
