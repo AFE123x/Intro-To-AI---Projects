@@ -341,7 +341,7 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
 
             # check if next direction is a wall
-            print(f"wall[{nextx}][{nexty}]:{self.walls[nextx][nexty]}")
+            #print(f"wall[{nextx}][{nexty}]:{self.walls[nextx][nexty]}")
 
             # check if that next position is hitting a wall
             if not self.walls[nextx][nexty]:
@@ -356,7 +356,7 @@ class CornersProblem(search.SearchProblem):
                 # if it is a corner, set that corner to true?? but how
                 if next_position in self.corners:
                     # print all the corners
-                    print(self.corners)             
+                    #print(self.corners)             
                     corner_index = self.corners.index(next_position)
                     new_visited_corners[corner_index] = True
 
@@ -386,20 +386,94 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     """
     A heuristic for the CornersProblem that you defined.
 
-      state:   The current search state
+      state:   The current search state 
                (a data structure you chose in your search problem)
+               (position,(True or false for if the corner is visited))
 
       problem: The CornersProblem instance for this layout.
 
     This function should always return a number that is a lower bound on the
-    shortest path from the state to a goal of the problem; i.e.  it should be
+    shortest path from the state to a goal of the problem; i.e., it should be
     admissible.
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    # Step 0: list all corners and find the unvisisted corners
+
+    # get the position and visited corners
+    currentPosition, visitedCorners = state
+    
+	# get the location of all the corners
+    corners = problem.corners 
+	
+    # list unvisited corners
+    unvisitedCorners=[]
+
+    # go through all the corners
+    for i,corner in enumerate(corners):
+		#check if the current corner has been visited, if it hasnt been, add it to list
+        if not visitedCorners[i]:
+            unvisitedCorners.append(corner)
+                
+    # If all corners are visited, heuristic is 0
+    if len(unvisitedCorners)==0:
+        return 0
+
+    # Step 1: find Manhattan dist to the nearest unvisited corner
+
+    minDistToFirstCorner = None
+    closestFirstCorner = None
+    # loop through all unvisited corners
+    for corner in unvisitedCorners:
+        # find the manhattan distance to corner
+        tempDist=util.manhattanDistance(currentPosition, corner)
+        #print(f"Distance to corner {corner} is {tempDist}")
+        # If the temp distance is shorter than the shortest distance, set it equal to the new shortest distance
+        if minDistToFirstCorner is None or tempDist < minDistToFirstCorner:
+            minDistToFirstCorner = tempDist
+            closestFirstCorner = corner
+    #print(f"Shortest distance to corner {closestFirstCorner} is {minDistToFirstCorner}")
+
+
+    # Step 2: Use closest unvisited corner to estimate the remaining path cost
+    
+    # remove the corner we are going to visit first from the unvisited list
+    unvisitedCorners.remove(closestFirstCorner)
+    #print(unvisitedCorners)
+
+
+    # estimate the cost to cover all remaining unvisited corners
+    remainingCornersCost = 0
+
+    # while there are still corners to visit
+    while unvisitedCorners:
+        #print(f"running unvisitedCorners: {unvisitedCorners}")
+
+        # loop through all unvisited corners
+        minDistToNextCorner = None
+        closestNextCorner = None
+        # loop through all unvisited corners
+        for corner in unvisitedCorners:
+            # find the manhattan distance from the first closest corner to the next closest corner 
+            tempDist=util.manhattanDistance(closestFirstCorner, corner)
+            #print(f"Distance to corner {corner} is {tempDist}")
+            # If the temp distance is shorter than the shortest distance, set it equal to the new shortest distance
+            if minDistToNextCorner is None or tempDist < minDistToNextCorner:
+                minDistToNextCorner = tempDist
+                closestNextCorner = corner
+        
+        #print(f"Shortest distance to next corner {closestNextCorner} is {minDistToNextCorner}")
+        # add minDistance to the remaining corner cost
+        remainingCornersCost += minDistToNextCorner
+        #print(f"New remaining corner cost is {remainingCornersCost}")
+
+        # remove corner we just visited from the list
+        unvisitedCorners.remove(closestNextCorner)
+
+    # Total heuristic distance is the nearest corner + estimated cost to remaining corners
+    return minDistToFirstCorner + remainingCornersCost
+
+
+
 
 
 

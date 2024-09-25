@@ -288,7 +288,7 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic) -> List[Directi
             # iterate through all the successors of the current node
             for suc_coord, suc_direction, suc_step_cost in problem.getSuccessors(current_coord):
                 # debug
-                print(f"suc:({suc_coord},{suc_direction},{suc_step_cost})")
+                #print(f"suc:({suc_coord},{suc_direction},{suc_step_cost})")
  
                 # calculate the new path cost
                 # find g(n)
