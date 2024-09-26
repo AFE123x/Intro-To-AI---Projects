@@ -567,7 +567,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+
     value = 0
     foods = foodGrid.asList()
     # input()
@@ -599,13 +599,30 @@ class ClosestDotSearchAgent(SearchAgent):
         gameState.
         """
         # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
+        position = gameState.getPacmanPosition()
+        foodGrid = gameState.getFood()
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        minValue = None
+        minFood = None
+
+        for food in foodGrid.asList():
+
+            tempValue = mazeDistance(food, position, gameState)
+
+            if minValue is None or tempValue < minValue:
+                minValue = tempValue
+                minFood = food
+
+        print(f"minfood:{minFood}:\tminValue:{minValue}")
+
+        
+
+        #print(f"{mazeDistance((5,3), (1,1), gameState)}")
+
+        return
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -639,6 +656,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
+        
 
         "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
