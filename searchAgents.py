@@ -572,6 +572,7 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     foods = foodGrid.asList()
     # input()
     for food in foods:
+        #find the best value from the food and get that one
         value = max(value, mazeDistance(food, position, problem.startingGameState))
     return value
 
@@ -600,23 +601,31 @@ class ClosestDotSearchAgent(SearchAgent):
         """
         # Here are some useful elements of the startState
         position = gameState.getPacmanPosition()
+        # print(f"start: {position}")
+        # input()
         foodGrid = gameState.getFood()
-        walls = gameState.getWalls()
-        problem = AnyFoodSearchProblem(gameState)
-
-
+        # print(f'foodgrid: {foodGrid}')
+        # input()
+                    
         minValue = None
         minFood = None
 
+        # find the closest food
         for food in foodGrid.asList():
-
             tempValue = mazeDistance(food, position, gameState)
-
+            # if the current food is closer than the saved food, update the saved food
             if minValue is None or tempValue < minValue:
                 minValue = tempValue
                 minFood = food
 
-        print(f"minfood:{minFood}:\tminValue:{minValue}")
+        # print(f"minfood:{minFood}:\tminValue:{minValue}")
+        # input()
+
+        prob = PositionSearchProblem(gameState, start=position, goal=minFood, warn=False, visualize=False)
+        print((search.bfs(prob)))
+        return (search.bfs(prob))
+
+        
 
         
 
@@ -657,10 +666,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
         
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return False
+        
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
     Returns the maze distance between any two points, using the search functions
