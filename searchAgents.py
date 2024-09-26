@@ -42,7 +42,6 @@ import util
 import time
 import search
 import pacman
-
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
 
@@ -403,7 +402,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     currentPosition, visitedCorners = state
     
 	# get the location of all the corners
-    corners = problem.corners 
+    corners = problem.corners
+
 	
     # list unvisited corners
     unvisitedCorners=[]
@@ -454,6 +454,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
         # loop through all unvisited corners
         for corner in unvisitedCorners:
             # find the manhattan distance from the first closest corner to the next closest corner 
+            print(f'{closestFirstCorner}, {corner}')
+            # input()
             tempDist=util.manhattanDistance(closestFirstCorner, corner)
             #print(f"Distance to corner {corner} is {tempDist}")
             # If the temp distance is shorter than the shortest distance, set it equal to the new shortest distance
@@ -468,6 +470,8 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
 
         # remove corner we just visited from the list
         unvisitedCorners.remove(closestNextCorner)
+
+        closestFirstCorner = closestNextCorner
 
     # Total heuristic distance is the nearest corner + estimated cost to remaining corners
     return minDistToFirstCorner + remainingCornersCost
@@ -564,7 +568,12 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    value = 0
+    foods = foodGrid.asList()
+    # input()
+    for food in foods:
+        value = max(value, mazeDistance(food, position, problem.startingGameState))
+    return value
 
 
 class ClosestDotSearchAgent(SearchAgent):
