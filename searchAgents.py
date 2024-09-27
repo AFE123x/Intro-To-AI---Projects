@@ -620,9 +620,9 @@ class ClosestDotSearchAgent(SearchAgent):
 
         # print(f"minfood:{minFood}:\tminValue:{minValue}")
         # input()
-
+        # create the search problem object
         prob = PositionSearchProblem(gameState, start=position, goal=minFood, warn=False, visualize=False)
-        print((search.bfs(prob)))
+        # return the path found
         return (search.bfs(prob))
 
         
