@@ -1,4 +1,0 @@
-[SearchAgent] using function bfs
-[SearchAgent] using problem type PositionSearchProblem
-suuucucc is (34, 15)
-suuucucc is (33, 16)
