@@ -179,8 +179,8 @@ class ApproximateQAgent(PacmanQAgent):
           Should return Q(state,action) = w * featureVector
           where * is the dotProduct operator
         """
-        features = FeatureExtractor.getFeatures(self=self, state=state, action=action)
-        features = self.featExtractor.getFeatures(self=self, state=state, action=action)
+        features = SimpleExtractor.getFeatures(self=self, state=state, action=action)
+        #features = self.featExtractor.getFeatures(self=self, state=state, action=action)
 
         qvalue = 0
         for key, value in features.items():
@@ -219,4 +219,5 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
+            print(self.weights)
             pass
