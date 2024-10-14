@@ -22,7 +22,6 @@ import gridworld
 
 
 import random,util,math
-import numpy as np
 import copy
 
 class QLearningAgent(ReinforcementAgent):
