@@ -69,12 +69,15 @@ class QLearningAgent(ReinforcementAgent):
         actions = self.getLegalActions(state)
         max = None
         for action in actions:
+            qval = self.getQValue(state, action)
             if max is None:
-                max = (self.getQValue(state, action), action)
+                max = (qval, action)
             elif max[0] < self.getQValue(state, action):
-              max = (self.getQValue(state, action), action)
-        return max[0] if max is not None else 0
-    
+              max = (qval, action)
+
+        if max is not None:
+          return max[0]
+        return 0    
 
     def computeActionFromQValues(self, state):
         """
@@ -89,7 +92,9 @@ class QLearningAgent(ReinforcementAgent):
                 max = (self.getQValue(state, action), action)
             elif max[0] < self.getQValue(state, action):
               max = (self.getQValue(state, action), action)
-        return max[1] if max is not None else None
+        if max is not None:
+          return max[1]
+        return None
 
 
     def getAction(self, state):
@@ -175,19 +180,40 @@ class ApproximateQAgent(PacmanQAgent):
         return self.weights
 
     def getQValue(self, state, action):
-        """
-          Should return Q(state,action) = w * featureVector
-          where * is the dotProduct operator
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+      """
+      @description: Returns the Q-value for a given state-action pair.
+      @param state: The current state.
+      @param action: The action taken in the current state.
+      @return: The Q-value computed as the dot product of weights and features.
+      """
+      features = self.featExtractor.getFeatures(state, action)
+      sum = 0
+      for (feature,value) in features.items():
+          sum = sum + (self.weights[feature] * value)
+      return sum
 
     def update(self, state, action, nextState, reward: float):
-        """
-           Should update your weights based on transition
-        """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+      """
+      @description: Updates the weights based on the observed transition.
+      @param state: The current state.
+      @param action: The action taken in the current state.
+      @param nextState: The resulting state after the action.
+      @param reward: The reward received after taking the action.
+      """
+      features = self.featExtractor.getFeatures(state, action)
+      legalActions = self.getLegalActions(nextState)
+      maxQNext = 0  # Default value if there are no legal actions
+
+      if legalActions:  # Check if there are any legal actions
+          maxQNext = self.getQValue(nextState, legalActions[0])  # Initialize with the first Q-value
+          for nextAction in legalActions[1:]:  # Iterate through the rest of the actions
+              qValue = self.getQValue(nextState, nextAction)
+              if qValue > maxQNext:
+                  maxQNext = qValue
+
+      difference = (reward + self.discount * maxQNext) - self.getQValue(state, action)
+      for (feature, value) in features.items():
+          self.weights[feature] += self.alpha * difference * value
 
     def final(self, state):
         """Called at the end of each game."""
@@ -197,5 +223,5 @@ class ApproximateQAgent(PacmanQAgent):
         # did we finish training?
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
-            "*** YOUR CODE HERE ***"
+            print(self.weights)
             pass
