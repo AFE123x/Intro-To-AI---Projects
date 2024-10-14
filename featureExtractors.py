@@ -24,6 +24,8 @@ class FeatureExtractor:
           Usually, the count will just be 1.0 for
           indicator functions.
         """
+        features = util.Counter()
+
         util.raiseNotDefined()
 
 class IdentityExtractor(FeatureExtractor):
