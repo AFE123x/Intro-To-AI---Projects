@@ -16,7 +16,7 @@
 import inspect
 import re
 import sys
-
+import time
 
 # Class which models a question in a project.  Note that questions have a
 # maximum number of points they are worth, and are composed of a series of
@@ -54,8 +54,12 @@ class PassAllTestsQuestion(Question):
         testsFailed = False
         grades.assignZeroCredit()
         for _, f in self.testCases:
+            start = time.time()
             if not f(grades):
                 testsFailed = True
+            end = time.time()
+            if end-start > 60:
+                print("WARNING: this question took over 60 seconds to run. This may end up timing out the gradescope autograder")
         if testsFailed:
             grades.fail("Tests failed.")
         else:
@@ -127,10 +131,14 @@ class PartialCreditQuestion(Question):
         grades.assignZeroCredit()
 
         for _, f in self.testCases:
+            start = time.time()
             if not f(grades):
                 grades.assignZeroCredit()
                 grades.fail("Tests failed.")
                 return False
+            end = time.time()
+        if end-start > 300:
+            print("WARNING: this question took over 5 minutes to run. This may end up timing out the gradescope autograder")
 
 
 class NumberPassedQuestion(Question):
