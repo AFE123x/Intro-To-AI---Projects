@@ -108,6 +108,31 @@ class MultiAgentSearchAgent(Agent):
         self.depth = int(depth)
 
 class MinimaxAgent(MultiAgentSearchAgent):
+    
+    """
+    Returns the minimax action from the current gameState using self.depth
+    and self.evaluationFunction.
+
+    Here are some method calls that might be useful when implementing minimax.
+
+    gameState.getLegalActions(agentIndex):
+    Returns a list of legal actions for an agent
+    agentIndex=0 means Pacman, ghosts are >= 1
+
+    gameState.generateSuccessor(agentIndex, action):
+    Returns the successor game state after an agent takes an action
+
+    gameState.getNumAgents():
+    Returns the total number of agents in the game
+
+    gameState.isWin():
+    Returns whether or not the game state is a winning state
+
+    gameState.isLose():
+    Returns whether or not the game state is a losing state
+    """
+    "*** YOUR CODE HERE ***"
+
     def getAction(self, gameState: GameState):
         """
         Returns the minimax action from the current gameState using self.depth
@@ -154,29 +179,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         return bestAction
 
-        """
-        Returns the minimax action from the current gameState using self.depth
-        and self.evaluationFunction.
-
-        Here are some method calls that might be useful when implementing minimax.
-
-        gameState.getLegalActions(agentIndex):
-        Returns a list of legal actions for an agent
-        agentIndex=0 means Pacman, ghosts are >= 1
-
-        gameState.generateSuccessor(agentIndex, action):
-        Returns the successor game state after an agent takes an action
-
-        gameState.getNumAgents():
-        Returns the total number of agents in the game
-
-        gameState.isWin():
-        Returns whether or not the game state is a winning state
-
-        gameState.isLose():
-        Returns whether or not the game state is a losing state
-        """
-        "*** YOUR CODE HERE ***"
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
