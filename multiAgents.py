@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -108,11 +108,52 @@ class MultiAgentSearchAgent(Agent):
         self.depth = int(depth)
 
 class MinimaxAgent(MultiAgentSearchAgent):
-    """
-    Your minimax agent (question 2)
-    """
-
     def getAction(self, gameState: GameState):
+        """
+        Returns the minimax action from the current gameState using self.depth
+        and self.evaluationFunction.
+        """
+
+        def minimax(agentIndex, depth, gameState):
+            if gameState.isWin() or gameState.isLose() or depth == 0:
+                return self.evaluationFunction(gameState)
+
+            actions = gameState.getLegalActions(agentIndex)
+            if agentIndex == 0: #pacman turn
+                bestValue = float('-inf')
+                for action in actions:
+                    successor = gameState.generateSuccessor(agentIndex, action)
+                    value = minimax(1, depth, successor)
+                    if value > bestValue:
+                        bestValue = value
+                return bestValue
+            else:  # Ghosts' turn
+                bestValue = float('inf')
+                nextAgent = (agentIndex + 1) % gameState.getNumAgents() # We want to go through all ghosts.
+                for action in actions:
+                    successor = gameState.generateSuccessor(agentIndex, action)
+                    arg = depth
+                    if nextAgent == 0:
+                        arg = depth - 1
+                    value = minimax(nextAgent, arg, successor)
+                    if value < bestValue:
+                        bestValue = value
+                return bestValue
+
+
+        actions = gameState.getLegalActions(0)
+        bestScore = float('-inf')
+        bestAction = None
+
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            score = minimax(1, self.depth, successor)  # Start with the ghost (index 1)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+
+        return bestAction
+
         """
         Returns the minimax action from the current gameState using self.depth
         and self.evaluationFunction.
