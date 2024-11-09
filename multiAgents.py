@@ -193,13 +193,59 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
     Your minimax agent with alpha-beta pruning (question 3)
     """
+    def value(self, gameState, depth, agentIndex, alpha, beta):
+        numAgents = gameState.getNumAgents()
+        
+        # Base case: terminal state or max depth
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return (self.evaluationFunction(gameState), None)
+        
+        # Determine if we're maximizing or minimizing
+        if agentIndex == 0:  # Pacman's turn (maximizing)
+            v = [-float("inf"), None]
+            legalActions = gameState.getLegalActions(agentIndex)
+            for act in legalActions:
+                succ = gameState.generateSuccessor(agentIndex, act)
+                valOfSucc = self.value(succ, depth, 1, alpha, beta)[0]  # move to the next agent (ghost)
+                v[1] = act if valOfSucc > v[0] else v[1]
+                v[0] = max(v[0], valOfSucc)
+                
+                # Pruning
+                if v[0] > beta:
+                    return v
+                alpha = max(alpha, v[0])
 
-    def getAction(self, gameState: GameState):
+        else:  # Ghost's turn (minimizing)
+            v = [float("inf"), None]
+            legalActions = gameState.getLegalActions(agentIndex)
+            for act in legalActions:
+                succ = gameState.generateSuccessor(agentIndex, act)
+                if agentIndex == numAgents - 1:  # Last ghost
+                    # If it's the last ghost, it's either a terminal state or max depth for pacman to move
+                    if depth != self.depth:
+                        valOfSucc = self.value(succ, depth + 1, 0, alpha, beta)[0]  # Pacman's turn next
+                    else:
+                        valOfSucc = self.evaluationFunction(succ)  # Terminal state reached
+                else:
+                    valOfSucc = self.value(succ, depth, agentIndex + 1, alpha, beta)[0]  # Move to the next ghost
+
+                v[1] = act if valOfSucc < v[0] else v[1]
+                v[0] = min(v[0], valOfSucc)
+                
+                # Pruning
+                if v[0] < alpha:
+                    return v
+                beta = min(beta, v[0])
+
+        return tuple(v)
+
+    def getAction(self, gameState):
         """
-        Returns the minimax action using self.depth and self.evaluationFunction
+          Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.maxValue(gameState, 1, -float("inf"), float("inf"))[1]
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
