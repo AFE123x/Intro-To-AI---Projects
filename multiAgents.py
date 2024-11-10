@@ -273,20 +273,52 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Your expectimax agent (question 4)
     """
 
     def getAction(self, gameState: GameState):
         """
-        Returns the expectimax action using self.depth and self.evaluationFunction
-
-        All ghosts should be modeled as choosing uniformly at random from their
-        legal moves.
+        Returns the expectimax action using self.depth and self.evaluationFunction.
+        All ghosts should be modeled as choosing uniformly at random from their legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        #util.raiseNotDefined()
-        ExpectimaxAgent()
-        return 
+        
+        def expectimax(agentIndex, depth, gameState):
+            if gameState.isWin() or gameState.isLose() or depth == 0:
+                return self.evaluationFunction(gameState)
+
+            actions = gameState.getLegalActions(agentIndex)
+            if agentIndex == 0: 
+                bestValue = float('-inf')
+                for action in actions:
+                    successor = gameState.generateSuccessor(agentIndex, action)
+                    value = expectimax(1, depth, successor)
+                    bestValue = max(bestValue, value)
+                return bestValue
+            else:
+                totalValue = 0
+                nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+                for action in actions: # Here, we will calculate the expected value.
+                    successor = gameState.generateSuccessor(agentIndex, action)
+                    value = expectimax(nextAgent, depth - 1 if nextAgent == 0 else depth, successor)
+                    totalValue += value
+                if actions:
+                    return totalValue / len(actions)
+                return 0
+
+        # Pacman's turn is at index 0
+        actions = gameState.getLegalActions(0)
+        bestScore = float('-inf')
+        bestAction = None
+
+        for action in actions:
+            successor = gameState.generateSuccessor(0, action)
+            score = expectimax(1, self.depth, successor)  # Start with the ghost (index 1)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+
+        return bestAction
+
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
