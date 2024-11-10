@@ -338,43 +338,62 @@ def betterEvaluationFunction(currentGameState: GameState):
     # Useful information you can extract from a GameState (pacman.py)
 
     pos = currentGameState.getPacmanPosition()
-    foodState = currentGameState.getFood()
+    foodGrid = currentGameState.getFood()
     ghostStates = currentGameState.getGhostStates()
-    newScaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
-    
-    "*** YOUR CODE HERE ***"
-    countdownScore = currentGameState.getScore()
+    scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
+    capsules = currentGameState.getCapsules()
     ghostPos = currentGameState.getGhostPosition(1)
-    
-    print(ExpectimaxAgent.getAction(currentGameState))
+
+    countdownScore = currentGameState.getScore()
 
     # find distance to all food
-    # distToFood=[]
-    # for food in foodState.asList():
-    #     distToFood.append(util.manhattanDistance(pos,food))
+    distToFood=[]
+    for food in foodGrid.asList():
+        distToFood.append(util.manhattanDistance(pos,food))
     
-    # foodDistanceScore = 1
-    # # find closet food and add to score
-    # if distToFood:
-    #     foodDistanceScore = min(distToFood)
+    foodDistanceScore = 1
+    # find closet food
+    if distToFood:
+        foodDistanceScore = min(distToFood)
+
+
+    # maybe only check for capsul if ghost isnt scared??
+
+    # find distance to all capsuls 
+    distToCapsul=[]
+    for capsul in capsules:
+        distToCapsul.append(util.manhattanDistance(pos,capsul))
+    
+    capsulDistanceScore = 1
+    # find closet capsul
+    if distToCapsul:
+        capsulDistanceScore = min(distToCapsul)
 
 
 
-    # print(newScaredTimes)
-    # # get the distance to the ghost
-    # ghostDist = util.manhattanDistance(pos,ghostPos) 
-    # scaredScore = 0
-    # # if its close, make it scared
-    # if ghostDist < 2:
-    #     scaredScore = -500
+    print(f"scared times:{scaredTimes}")
+    # get the distance to the ghost
+    ghostDist = util.manhattanDistance(pos,ghostPos) 
+    scaredScore = 0
+
+    # check if the ghost isnt current scared
+    if scaredTimes[0] == 0:
+        # if its close and not scared, run
+        if ghostDist < 2:
+            scaredScore = -1000
+        # if its close and not scared, depth 2 check
+        elif ghostDist < 4:
+            scaredScore = -200
+
+    # if its close and scared check if its reachable, and chase the ghost
+    elif scaredTimes[0] > 0 and ghostDist < scaredTimes[0]:
+        scaredScore = 100 / ghostDist
 
 
+    score = 3*countdownScore + 10/foodDistanceScore + 15/capsulDistanceScore + scaredScore
 
-    # score = countdownScore + scaredScore + 10/foodDistanceScore
-
-    # print(f"score:{score}\n")
-    # return score
-    return 0
+    print(f"score:{score}\n")
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
