@@ -371,7 +371,7 @@ def betterEvaluationFunction(currentGameState: GameState):
 
 
 
-    print(f"scared times:{scaredTimes}")
+    #print(f"scared times:{scaredTimes}")
     # get the distance to the ghost
     ghostDist = util.manhattanDistance(pos,ghostPos) 
     scaredScore = 0
@@ -390,9 +390,9 @@ def betterEvaluationFunction(currentGameState: GameState):
         scaredScore = 100 / ghostDist
 
 
-    score = 3*countdownScore + 10/foodDistanceScore + 15/capsulDistanceScore + scaredScore
+    score = countdownScore + 10/foodDistanceScore + 15/capsulDistanceScore + scaredScore
 
-    print(f"score:{score}\n")
+    #print(f"score:{score}\n")
     return score
 
 # Abbreviation
