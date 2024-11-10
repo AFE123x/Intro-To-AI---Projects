@@ -329,7 +329,44 @@ def betterEvaluationFunction(currentGameState: GameState):
     """
     "*** YOUR CODE HERE ***"
     # Useful information you can extract from a GameState (pacman.py)
-    print("hello")
+
+    pos = currentGameState.getPacmanPosition()
+    foodState = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
+    
+    "*** YOUR CODE HERE ***"
+    countdownScore = currentGameState.getScore()
+    ghostPos = currentGameState.getGhostPosition(1)
+    
+    print(ExpectimaxAgent.getAction(currentGameState))
+
+    # find distance to all food
+    # distToFood=[]
+    # for food in foodState.asList():
+    #     distToFood.append(util.manhattanDistance(pos,food))
+    
+    # foodDistanceScore = 1
+    # # find closet food and add to score
+    # if distToFood:
+    #     foodDistanceScore = min(distToFood)
+
+
+
+    # print(newScaredTimes)
+    # # get the distance to the ghost
+    # ghostDist = util.manhattanDistance(pos,ghostPos) 
+    # scaredScore = 0
+    # # if its close, make it scared
+    # if ghostDist < 2:
+    #     scaredScore = -500
+
+
+
+    # score = countdownScore + scaredScore + 10/foodDistanceScore
+
+    # print(f"score:{score}\n")
+    # return score
     return 0
 
 # Abbreviation
