@@ -262,12 +262,13 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
         return tuple(v)
 
+
     def getAction(self, gameState):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        return self.maxValue(gameState, 1, -float("inf"), float("inf"))[1]
+        return self.value(gameState, 1, 0, -float("inf"), float("inf"))[1]
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
