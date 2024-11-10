@@ -93,7 +93,7 @@ class ReflexAgent(Agent):
         if distToFood:
             foodDistanceScore = min(distToFood)
 
-        # get the scared score of a ghost
+        # get the distance to the ghost
         ghostDist = util.manhattanDistance(newPos,ghostPos) 
         scaredScore = 0
         # if its close, make it scared
@@ -284,7 +284,9 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        #util.raiseNotDefined()
+        ExpectimaxAgent()
+        return 
 
 def betterEvaluationFunction(currentGameState: GameState):
     """
@@ -294,7 +296,9 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # Useful information you can extract from a GameState (pacman.py)
+    print("hello")
+    return 0
 
 # Abbreviation
 better = betterEvaluationFunction
