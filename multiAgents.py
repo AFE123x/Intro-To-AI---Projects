@@ -281,43 +281,50 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         Returns the expectimax action using self.depth and self.evaluationFunction.
         All ghosts should be modeled as choosing uniformly at random from their legal moves.
         """
-        
-        def expectimax(agentIndex, depth, gameState):
-            if gameState.isWin() or gameState.isLose() or depth == 0:
-                return self.evaluationFunction(gameState)
-
-            actions = gameState.getLegalActions(agentIndex)
-            if agentIndex == 0: 
-                bestValue = float('-inf')
-                for action in actions:
-                    successor = gameState.generateSuccessor(agentIndex, action)
-                    value = expectimax(1, depth, successor)
-                    bestValue = max(bestValue, value)
-                return bestValue
-            else:
-                totalValue = 0
-                nextAgent = (agentIndex + 1) % gameState.getNumAgents()
-                for action in actions: # Here, we will calculate the expected value.
-                    successor = gameState.generateSuccessor(agentIndex, action)
-                    value = expectimax(nextAgent, depth - 1 if nextAgent == 0 else depth, successor)
-                    totalValue += value
-                if actions:
-                    return totalValue / len(actions)
-                return 0
-
-        # Pacman's turn is at index 0
+        # Start with Pacman's turn (agentIndex = 0), depth = 1
         actions = gameState.getLegalActions(0)
         bestScore = float('-inf')
         bestAction = None
 
         for action in actions:
             successor = gameState.generateSuccessor(0, action)
-            score = expectimax(1, self.depth, successor)  # Start with the ghost (index 1)
+            score = self.expectimax(1, self.depth, successor)  # Start with the ghost (index 1)
             if score > bestScore:
                 bestScore = score
                 bestAction = action
 
         return bestAction
+
+    def expectimax(self, agentIndex, depth, gameState):
+        """
+        Recursive expectimax function (outside the getAction method).
+        This function should handle both the maximizing (Pacman's) and minimizing (ghosts') behavior.
+        """
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
+
+        actions = gameState.getLegalActions(agentIndex)
+        
+        if agentIndex == 0:  # Pacman's turn (maximizing)
+            bestValue = float('-inf')
+            for action in actions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                value = self.expectimax(1, depth, successor)  # Move to the next agent (ghost)
+                bestValue = max(bestValue, value)
+            return bestValue
+        else:  # Ghost's turn (minimizing)
+            totalValue = 0
+            nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+            for action in actions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                value = self.expectimax(nextAgent, depth - 1 if nextAgent == 0 else depth, successor)
+                totalValue += value
+
+            # Return the expected value for the ghost
+            if actions:
+                return totalValue / len(actions)
+            return 0
+
 
 
 def betterEvaluationFunction(currentGameState: GameState):
