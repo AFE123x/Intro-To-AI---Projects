@@ -332,7 +332,12 @@ def betterEvaluationFunction(currentGameState: GameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: What I did first was I found the distance to the closest ghost, food, capsul.
+    Next I found the value of being close to a ghost, if I had a capsul active, I would try to chase 
+    the ghost if it was within range. If I didn't have a capsul active, I would play normally and get 
+    the food and capsuls, if I was close to a ghost, I would incurr a negative score for that part and a 
+    super large score if the ghost was right next to me. 
+    Lastly I would sum up the scores and distances with different weights to give a final score/value of the current state.
     """
     "*** YOUR CODE HERE ***"
     # Useful information you can extract from a GameState (pacman.py)
