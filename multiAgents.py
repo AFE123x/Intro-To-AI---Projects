@@ -75,14 +75,37 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
         
         "*** YOUR CODE HERE ***"
-                
-        sum=0
-        for food in newFood.asList():
-            sum += (-1*util.manhattanDistance((newPos),(food)))
+        countdownScore = successorGameState.getScore()
 
-        print(sum)
-        return -1 * len(newFood.asList())
-        newGhostStates
+        #print(f"numagents:{successorGameState.getNumAgents()}")
+
+        ghostPos = successorGameState.getGhostPosition(1)
+        
+        #print(f"pacman:{newPos}")
+        #print(f"ghost:{ghostPos}")
+
+        distToFood=[]
+        for food in newFood.asList():
+            distToFood.append(util.manhattanDistance(newPos,food))
+        
+        foodDistanceScore = 1
+        # find closet food and add to score
+        if distToFood:
+            foodDistanceScore = min(distToFood)
+
+        # get the scared score of a ghost
+        ghostDist = util.manhattanDistance(newPos,ghostPos) 
+        scaredScore = 0
+        # if its close, make it scared
+        if ghostDist < 2:
+            scaredScore = -500
+
+        score = countdownScore + scaredScore + 10/foodDistanceScore
+
+        #print(f"score:{score}\n")
+        return score
+        #return -1 * len(newFood.asList())
+        #newGhostStates
         #return successorGameState
 
 def scoreEvaluationFunction(currentGameState: GameState):
