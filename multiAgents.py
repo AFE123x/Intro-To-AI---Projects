@@ -307,42 +307,42 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         return bestAction
 
-def expectimax(self, agentIndex, depth, gameState):
-    """
-    Recursive expectimax function that handles both the maximizing (Pacman's) and
-    minimizing (ghosts') behavior, as well as the expected value for ghost actions.
+    def expectimax(self, agentIndex, depth, gameState):
+        """
+        Recursive expectimax function that handles both the maximizing (Pacman's) and
+        minimizing (ghosts') behavior, as well as the expected value for ghost actions.
     
-    Arguments:
-    - agentIndex: The index of the agent (0 for Pacman, others for ghosts).
-    - depth: The current search depth.
-    - gameState: The current game state.
+         Arguments:
+        - agentIndex: The index of the agent (0 for Pacman, others for ghosts).
+        - depth: The current search depth.
+        - gameState: The current game state.
 
-    Returns:
-    - A numeric value representing the best score the agent can expect at this game state.
-    """
+        Returns:
+        - A numeric value representing the best score the agent can expect at this game state.
+        """
 
-    if gameState.isWin() or gameState.isLose() or depth == 0:
-        return self.evaluationFunction(gameState)
+        if gameState.isWin() or gameState.isLose() or depth == 0:
+            return self.evaluationFunction(gameState)
 
-    actions = gameState.getLegalActions(agentIndex)
-    if agentIndex == 0: #pacman's turn
-        bestValue = float('-inf')
-        for action in actions:
-            successor = gameState.generateSuccessor(agentIndex, action)
-            value = self.expectimax(1, depth, successor)
-            bestValue = max(bestValue, value)
-        return bestValue
+        actions = gameState.getLegalActions(agentIndex)
+        if agentIndex == 0: #pacman's turn
+            bestValue = float('-inf')
+            for action in actions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                value = self.expectimax(1, depth, successor)
+                bestValue = max(bestValue, value)
+            return bestValue
 
-    else: # ghosts turn!
-        totalValue = 0
-        nextAgent = (agentIndex + 1) % gameState.getNumAgents()
+        else: # ghosts turn!
+            totalValue = 0
+            nextAgent = (agentIndex + 1) % gameState.getNumAgents()
         
-        for action in actions:
-            successor = gameState.generateSuccessor(agentIndex, action)
-            value = self.expectimax(nextAgent, depth - 1 if nextAgent == 0 else depth, successor)
-            totalValue += value
-        if actions:
-            return totalValue / len(actions) # Calculate the expected value.
+            for action in actions:
+                successor = gameState.generateSuccessor(agentIndex, action)
+                value = self.expectimax(nextAgent, depth - 1 if nextAgent == 0 else depth, successor)
+                totalValue += value
+            if actions:
+                return totalValue / len(actions) # Calculate the expected value.
         return 0
 
 
