@@ -16,71 +16,30 @@ from torch import movedim
 
 class PerceptronModel(Module):
     def __init__(self, dimensions):
-        """
-        Initialize a new Perceptron instance.
-
-        A perceptron classifies data points as either belonging to a particular
-        class (+1) or not (-1). `dimensions` is the dimensionality of the data.
-        For example, dimensions=2 would mean that the perceptron must classify
-        2D points.
-
-        In order for our autograder to detect your weight, initialize it as a 
-        pytorch Parameter object as follows:
-
-        Parameter(weight_vector)
-
-        where weight_vector is a pytorch Tensor of dimension 'dimensions'
-
-        
-        Hint: You can use ones(dim) to create a tensor of dimension dim.
-        """
         super(PerceptronModel, self).__init__()
-        
-        "*** YOUR CODE HERE ***"
-        self.w = None #Initialize your weights here
+        # Initialize the weights as a PyTorch Parameter
+        self.w = Parameter(ones(dimensions))
 
     def get_weights(self):
-        """
-        Return a Parameter instance with the current weights of the perceptron.
-        """
         return self.w
 
     def run(self, x):
-        """
-        Calculates the score assigned by the perceptron to a data point x.
-
-        Inputs:
-            x: a node with shape (1 x dimensions)
-        Returns: a node containing a single number (the score)
-
-        The pytorch function `tensordot` may be helpful here.
-        """
-        "*** YOUR CODE HERE ***"
-
+        # Compute the score using tensordot
+        return tensordot(self.w, x, dims=1)
 
     def get_prediction(self, x):
-        """
-        Calculates the predicted class for a single data point `x`.
-
-        Returns: 1 or -1
-        """
-        "*** YOUR CODE HERE ***"
-
-
+        # Return 1 if the score is positive, otherwise -1
+        score = self.run(x)
+        return 1 if score > 0 else -1
 
     def train(self, dataset):
-        """
-        Train the perceptron until convergence.
-        You can iterate through DataLoader in order to 
-        retrieve all the batches you need to train on.
-
-        Each sample in the dataloader is in the form {'x': features, 'label': label} where label
-        is the item we need to predict based off of its features.
-        """        
         with no_grad():
             dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
-            "*** YOUR CODE HERE ***"
-
+            for data in dataloader:
+                x, label = data['x'], data['label']
+                prediction = self.get_prediction(x)
+                if prediction != label.item():
+                    self.w += x * label.item()
 
 
 class RegressionModel(Module):
