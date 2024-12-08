@@ -82,6 +82,7 @@ class RegressionModel(Module):
         output_size = 1
         learning_rate = .003
         self.num_epoch = 5000
+        self.num_hidden_layers = 3
 
         # LR 1000 epoch
         # .002 = 0.000288
@@ -105,11 +106,13 @@ class RegressionModel(Module):
 
 
         # input to the hidden layer
-        self.linear1 = Linear(input_size, hidden_size)
+        self.linear_in = Linear(input_size, hidden_size)
 
         # can put more layers in here
         # hidden layer to the output
-        self.linear2 = Linear(hidden_size, output_size)
+        self.linear_middle = Linear(hidden_size, hidden_size)
+
+        self.linear_out = Linear(hidden_size, output_size)
 
         # optimizer
         self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
@@ -127,13 +130,21 @@ class RegressionModel(Module):
         """
         "*** YOUR CODE HERE ***"
         #print("\nforward")
-        s1 = self.linear1(x)
-        #print(f"s1:\n{s1}")
-        s2 = relu(s1)
-        #print(f"s2:\n{s2}")
-        s3 = self.linear2(s2)
-        #print(f"s3:\n{s3}")
-        return s3
+        out = self.linear_in(x)
+        #print(f"in:\n{out}")
+        out = relu(out)
+        #print(f"relu:\n{out}")
+
+        # added loop for hidden layers
+        for i in range(self.num_hidden_layers):
+            out = self.linear_middle(out)
+            #print(f"middle_{i}:\n{out}")
+            out = relu(out)
+            #print(f"relu_{i}:\n{out}")
+        
+        out = self.linear_out(out)
+        #print(f"out:\n{out}")
+        return out
 
     
     def get_loss(self, x, y):
@@ -167,16 +178,17 @@ class RegressionModel(Module):
             
         """
         "*** YOUR CODE HERE ***"
-        print("\n\ntrain")
-        #self.train()
+        #print("\n\ntrain")
         batch_size = 1
         
+        # finds a batch size that is between 128 and 1 and works with the data set size
         for i in range(128, 1, -1):
             if len(dataset) % i == 0:
                 batch_size = i
                 break
         print(f"DS Length:{len(dataset)}")
         print(f"Batch Size:{batch_size}")
+
         data = DataLoader(dataset, batch_size=batch_size)
         epoch_count = 0
         for epoch in range(self.num_epoch):
@@ -201,13 +213,14 @@ class RegressionModel(Module):
             avg_loss = epoch_loss / len(data)
 
 
-            if epoch_count % 100 == 0:
+            if epoch_count % 10 == 0:
                 print(f"Epoch [{epoch+1}/{epoch_count}], Loss: {avg_loss:.4f}")
 
-            # Early stopping if loss is below the threshold
-            #if avg_loss <= 0.002:
-            #    print(f'Training stopped at epoch {epoch+1} with loss {avg_loss:.4f}')
-            #    break
+            # stopping if loss is below the threshold
+            # 0.02 or better for full points
+            if avg_loss <= 0.001:
+               print(f'Training stopped at epoch {epoch+1} with loss {avg_loss:.4f}')
+               break
 
 
             
