@@ -16,27 +16,40 @@ from torch import movedim
 
 class PerceptronModel(Module):
     def __init__(self, dimensions):
+        print("\n\n\nstart init")
         super(PerceptronModel, self).__init__()
         # Initialize the weights as a PyTorch Parameter
-        self.w = Parameter(ones(dimensions))
+        print(f"dims:{dimensions}")
+        self.w = Parameter(ones(1, dimensions))
+        print(f"Initialized weights shape: {self.w.shape}")  # Should print torch.Size([1, 2])
+        print(f"self.w.dim() = {self.w.dim()}")
+        print(f"Initialized weights:\n{self.w}\n")  # Should print torch.Size([1, 2])
 
     def get_weights(self):
         return self.w
 
     def run(self, x):
-        # Compute the score using tensordot
-        return tensordot(self.w, x, dims=1)
+        # Compute the score using tensordot       
+        print("\nrun") 
+        print(f"weights:\n{self.w}") 
+        print(f"x:\n{x}") 
+        print(f"td:\n{tensordot(self.w, x, dims=self.w.dim())}\n")
+        return tensordot(self.w, x, dims=self.w.dim())
 
     def get_prediction(self, x):
         # Return 1 if the score is positive, otherwise -1
         score = self.run(x)
-        return 1 if score > 0 else -1
+        print("\nGet prediction")
+        print(f"x:{x}")
+        print(f"score:{score}")
+        return 1 if score >= 0 else -1
 
     def train(self, dataset):
         with no_grad():
             dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
             for data in dataloader:
                 x, label = data['x'], data['label']
+                print(f"{x}:{label}\n")
                 prediction = self.get_prediction(x)
                 if prediction != label.item():
                     self.w += x * label.item()
