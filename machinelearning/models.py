@@ -16,43 +16,54 @@ from torch import movedim
 
 class PerceptronModel(Module):
     def __init__(self, dimensions):
-        print("\n\n\nstart init")
+        #print("\n\nstart init")
         super(PerceptronModel, self).__init__()
         # Initialize the weights as a PyTorch Parameter
-        print(f"dims:{dimensions}")
+        #print(f"dims:{dimensions}")
         self.w = Parameter(ones(1, dimensions))
-        print(f"Initialized weights shape: {self.w.shape}")  # Should print torch.Size([1, 2])
-        print(f"self.w.dim() = {self.w.dim()}")
-        print(f"Initialized weights:\n{self.w}\n")  # Should print torch.Size([1, 2])
+        #print(f"Initialized weights shape: {self.w.shape}")  # Should print torch.Size([1, 2])
+        #print(f"self.w.dim() = {self.w.dim()}")
+        #print(f"Initialized weights:\n{self.w}")  # Should print torch.Size([1, 2])
 
     def get_weights(self):
         return self.w
 
     def run(self, x):
         # Compute the score using tensordot       
-        print("\nrun") 
-        print(f"weights:\n{self.w}") 
-        print(f"x:\n{x}") 
-        print(f"td:\n{tensordot(self.w, x, dims=self.w.dim())}\n")
+        #print("\nrun") 
+        ##print(f"weights:\n{self.w}") 
+        ##print(f"x:\n{x}") 
+        #print(f"td:\n{tensordot(self.w, x, dims=self.w.dim())}\n")
         return tensordot(self.w, x, dims=self.w.dim())
 
     def get_prediction(self, x):
         # Return 1 if the score is positive, otherwise -1
         score = self.run(x)
-        print("\nGet prediction")
-        print(f"x:{x}")
-        print(f"score:{score}")
+        #print("\nGet prediction")
+        ##print(f"x:{x}")
+        #print(f"score:{score}")
         return 1 if score >= 0 else -1
 
     def train(self, dataset):
+        #print("train")
         with no_grad():
-            dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
-            for data in dataloader:
-                x, label = data['x'], data['label']
-                print(f"{x}:{label}\n")
-                prediction = self.get_prediction(x)
-                if prediction != label.item():
-                    self.w += x * label.item()
+            data = DataLoader(dataset, batch_size=1)
+
+            m = 1
+            while m != 0:
+                m = 0
+                for batch in data:
+                    x, label = batch['x'], batch['label']
+                    #print(f"(x,label) ({x},{label})\n")
+                    prediction = self.get_prediction(x)
+                    #print(f"item:{label.item()}")
+                    # if the prediction doesnt equal the label, update the weight vector
+                    if prediction != label.item():
+                        self.w += x * label.item()
+                        m += 1
+                #print(f"miss classifications={m}")
+            #print(f"loop over")
+
 
 
 class RegressionModel(Module):
@@ -64,7 +75,35 @@ class RegressionModel(Module):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        super().__init__()
+        super(RegressionModel, self).__init__()
+
+        input_size = 1
+        hidden_size = 500
+        output_size = 1
+        learning_rate = .003
+        self.num_epoch = 5000
+
+        # LR 1000 epoch
+        # .002 = 0.000288
+        # .003 = 0.000113
+        # .004 = 0.000127
+        # .005 = 0.000120
+        # .006 = 0.000327
+        # .007 = 0.000095
+        # .01 =  0.000493
+        
+
+
+
+        # input to the hidden layer
+        self.linear1 = Linear(input_size, hidden_size)
+
+        # can put more layers in here
+        # hidden layer to the output
+        self.linear2 = Linear(hidden_size, output_size)
+
+        # optimizer
+        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
 
 
 
@@ -78,6 +117,14 @@ class RegressionModel(Module):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        #print("\nforward")
+        s1 = self.linear1(x)
+        #print(f"s1:\n{s1}")
+        s2 = relu(s1)
+        #print(f"s2:\n{s2}")
+        s3 = self.linear2(s2)
+        #print(f"s3:\n{s3}")
+        return s3
 
     
     def get_loss(self, x, y):
@@ -91,8 +138,10 @@ class RegressionModel(Module):
         Returns: a tensor of size 1 containing the loss
         """
         "*** YOUR CODE HERE ***"
- 
-  
+       # print()
+        #print(mse_loss(x,y))
+        x = self.forward(x)
+        return mse_loss(x,y)
 
     def train(self, dataset):
         """
@@ -109,6 +158,47 @@ class RegressionModel(Module):
             
         """
         "*** YOUR CODE HERE ***"
+        print("\n\ntrain")
+        #self.train()
+        batch_size = 1
+        
+        for i in range(128, 1, -1):
+            if len(dataset) % i == 0:
+                batch_size = i
+                break
+        print(f"DS Length:{len(dataset)}")
+        print(f"Batch Size:{batch_size}")
+        data = DataLoader(dataset, batch_size=batch_size)
+        epoch_count = 0
+        for epoch in range(self.num_epoch):
+            epoch_loss = 0.0
+            epoch_count += 1
+            for batch in data:
+                x, label = batch['x'], batch['label']
+                #print(f"x:\n{x}\nlabel:\n{label}\n")
+                
+                # get predicted y values & calculate loss tensor
+                loss = self.get_loss(x, label)
+
+                # reset gradients
+                self.optimizer.zero_grad()
+                # calculate gradient
+                loss.backward()
+                # update weights
+                self.optimizer.step()
+
+                epoch_loss += loss.item()
+
+            avg_loss = epoch_loss / len(data)
+
+
+            if epoch_count % 100 == 0:
+                print(f"Epoch [{epoch+1}/{epoch_count}], Loss: {avg_loss:.4f}")
+
+            # Early stopping if loss is below the threshold
+            #if avg_loss <= 0.002:
+            #    print(f'Training stopped at epoch {epoch+1} with loss {avg_loss:.4f}')
+            #    break
 
 
             
