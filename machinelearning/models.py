@@ -1,3 +1,8 @@
+from torch import no_grad, stack
+from torch.utils.data import DataLoader
+from torch.nn import Module
+
+
 """
 Functions you should use.
 Please avoid importing any other torch functions or modules.
@@ -6,9 +11,8 @@ Your code will not pass if the gradescope autograder detects any changed imports
 from torch.nn import Parameter, Linear
 from torch import optim, tensor, tensordot, empty, ones
 from torch.nn.functional import cross_entropy, relu, mse_loss
-from torch import movedim, no_grad, stack
-from torch.utils.data import DataLoader
-from torch.nn import Module
+from torch import movedim
+
 
 class PerceptronModel(Module):
     """
