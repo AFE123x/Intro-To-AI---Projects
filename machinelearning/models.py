@@ -223,73 +223,66 @@ class RegressionModel(Module):
                break
 
 
-            
-
-
-
-
-
-
-
 class DigitClassificationModel(Module):
-    """
-    A model for handwritten digit classification using the MNIST dataset.
-
-    Each handwritten digit is a 28x28 pixel grayscale image, which is flattened
-    into a 784-dimensional vector for the purposes of this model. Each entry in
-    the vector is a floating point number between 0 and 1.
-
-    The goal is to sort each digit into one of 10 classes (number 0 through 9).
-
-    (See RegressionModel for more information about the APIs of different
-    methods here. We recommend that you implement the RegressionModel before
-    working on this part of the project.)
-    """
     def __init__(self):
-        # Initialize your model parameters here
-        super().__init__()
-        input_size = 28 * 28
+        """
+        Initialize the model with an input layer, two hidden layers, and an output layer.
+        """
+        super(DigitClassificationModel, self).__init__()
+        input_size = 28 * 28 
+        hidden_size1 = 256
+        hidden_size2 = 128
         output_size = 10
-        "*** YOUR CODE HERE ***"
+        learning_rate = 0.01
 
+        # Define layers
+        self.linear1 = Linear(input_size, hidden_size1)
+        self.linear2 = Linear(hidden_size1, hidden_size2)
+        self.linear3 = Linear(hidden_size2, output_size)
 
+        # Define optimizer
+        self.optimizer = optim.SGD(self.parameters(), lr=learning_rate)
 
     def run(self, x):
         """
-        Runs the model for a batch of examples.
-
-        Your model should predict a node with shape (batch_size x 10),
-        containing scores. Higher scores correspond to greater probability of
-        the image belonging to a particular class.
-
-        Inputs:
-            x: a tensor with shape (batch_size x 784)
-        Output:
-            A node with shape (batch_size x 10) containing predicted scores
-                (also called logits)
+        Forward pass through the network.
         """
-        """ YOUR CODE HERE """
-
+        x = relu(self.linear1(x))  # First hidden layer with ReLU
+        x = relu(self.linear2(x))  # Second hidden layer with ReLU
+        x = self.linear3(x)        # Output layer (logits)
+        return x
 
     def get_loss(self, x, y):
         """
-        Computes the loss for a batch of examples.
-
-        The correct labels `y` are represented as a tensor with shape
-        (batch_size x 10). Each row is a one-hot vector encoding the correct
-        digit class (0-9).
-
-        Inputs:
-            x: a node with shape (batch_size x 784)
-            y: a node with shape (batch_size x 10)
-        Returns: a loss tensor
+        Compute the loss for a batch of examples.
         """
-        """ YOUR CODE HERE """
-
-        
+        logits = self.run(x)
+        return cross_entropy(logits, y)
 
     def train(self, dataset):
         """
-        Trains the model.
+        Train the model using the dataset.
         """
-        """ YOUR CODE HERE """
+        batch_size = 64  # Batch size for training
+        epochs = 10      # Number of epochs for training
+        data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+        for epoch in range(epochs):
+            epoch_loss = 0.0
+
+            for batch in data_loader:
+                x, labels = batch['x'], batch['label']
+
+                # Perform forward pass and compute loss
+                loss = self.get_loss(x, labels)
+
+                # Backpropagation
+                self.optimizer.zero_grad()  # Reset gradients
+                loss.backward()             # Compute gradients
+                self.optimizer.step()       # Update parameters
+
+                epoch_loss += loss.item()
+
+            # Print average loss for the epoch
+            avg_loss = epoch_loss / len(data_loader)
+            print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}")
