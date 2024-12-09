@@ -201,8 +201,8 @@ class DigitClassificationModel(Module):
         super(DigitClassificationModel, self).__init__()
 
         input_size = 28 * 28  # Input size for 28x28 images
-        hidden_size1 = 256
-        hidden_size2 = 128
+        hidden_size1 = 512
+        hidden_size2 = 256
         output_size = 10  # Output size for 10 digit classes (0-9)
         learning_rate = 0.1
 
