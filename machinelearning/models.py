@@ -182,11 +182,11 @@ class RegressionModel(Module):
 
             avg_loss = epoch_loss / len(data)
 
-            if epoch_count % 10 == 0:
-                print(f"Epoch [{epoch+1}/{epoch_count}], Loss: {avg_loss:.4f}")
+            #if epoch_count % 10 == 0:
+                #print(f"Epoch [{epoch_count}], Loss: {avg_loss:.4f}")
 
             if avg_loss <= 0.001:
-                print(f'Training stopped at epoch {epoch+1} with loss {avg_loss:.4f}')
+                #print(f'Training stopped at epoch {epoch+1} with loss {avg_loss:.4f}')
                 break
 
 class DigitClassificationModel(Module):
@@ -250,11 +250,14 @@ class DigitClassificationModel(Module):
             dataset: A PyTorch dataset object containing labeled image data to train on.
         """
         batch_size = 64  # Batch size for training
-        epochs = 10      # Number of epochs for training
+        epoch = 0      # Number of epochs for training
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-        for epoch in range(epochs):
+        while dataset.get_validation_accuracy() <= .983:
+        #for epoch in range(epochs):
+            #print(f"ff:{dataset.get_validation_accuracy()}")
             epoch_loss = 0.0
+            epoch += 1
 
             for batch in data_loader:
                 x, labels = batch['x'], batch['label']
@@ -268,4 +271,4 @@ class DigitClassificationModel(Module):
                 epoch_loss += loss.item()
 
             avg_loss = epoch_loss / len(data_loader)
-            print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}")
+            #print(f"Epoch [{epoch}], Loss: {avg_loss:.4f}")
